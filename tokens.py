@@ -15,12 +15,12 @@ class TokenType(Enum):
     EOF:int = auto()
 
 
-class Token:
-    def __init__(self, _type:int, text:str, start_pos:int):
+class Token(object):
+    def __init__(self, _type:int, value:str, start_pos:int):
         self.type = _type
-        self.text = text
+        self.value = value
         self.start_pos = start_pos
 
     def __repr__(self):
-        #return f"({self.type}:`{self.text}`)"
-        return f"Token({self.type}, \'{self.text}\', {self.start_pos})"
+        #return f"({self.type}:`{self.value}`)"
+        return f"Token({self.type}, \'{self.value}\', {self.start_pos})"

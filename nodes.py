@@ -11,13 +11,12 @@ class Statement(Node): ...
 class Expression(Node): ...
 
 
-class NullLiteral(Expression):
-    def __init__(self, token:Token, value:str):
+class UndefinedLiteral(Expression):
+    def __init__(self, token:Token):
         self.token = token
-        self.value = value
 
     def __repr__(self) -> str:
-        return str(self.value)
+        return str(self.token.value)
 
     def __call__(self):
         return None
@@ -26,25 +25,30 @@ class NullLiteral(Expression):
         try:
             return self()
         except ValueError:
-            raise(f"Error converting {self.value} to {self.type}")
+            raise(f"Error converting {self.token.value} to {self.token.type}")
 
 
-class IntegerLiteral(NullLiteral):
+class NullLiteral(UndefinedLiteral):
     def __call__(self):
-        return int(self.value)
+        return int(self.token.value)
 
 
-class FloatLiteral(NullLiteral):
+class IntegerLiteral(UndefinedLiteral):
     def __call__(self):
-        return float(self.value)
+        return int(self.token.value)
 
 
-class StringLiteral(NullLiteral):
+class FloatLiteral(UndefinedLiteral):
     def __call__(self):
-        return str(self.value)[1:-1]
+        return float(self.token.value)
 
 
-class BooleanLiteral(NullLiteral):
+class StringLiteral(UndefinedLiteral):
+    def __call__(self):
+        return str(self.token.value)[1:-1]
+
+
+class BooleanLiteral(UndefinedLiteral):
     def __call__(self):
         if self.token.type == TokenType.False_:
             return False
@@ -60,15 +64,20 @@ class PrefixExpression(Expression):
     def __repr__(self) -> str:
         return f"({self.operator}{self.right})"
 
-    def get_type(self) -> str:
-        return self.right.token.type
-
     def eval(self):
         try:
             return _operator[self.operator](self.right.eval())
         except TypeError:
-            raise TypeError(f"can't perform {self.operator} between {self.left_type()} and  {self.left_type()}")
+            raise TypeError(f"can't perform `{self.operator}` on {self.right.token.type}")
 
 
-def literal(token:Token, type:TokenType, value:str):
-    if token
+type_literal_map = {
+  TokenType.Integer:IntegerLiteral,
+  TokenType.Float:FloatLiteral,
+  TokenType.String:StringLiteral,
+  TokenType.True_:BooleanLiteral,
+  TokenType.False_:BooleanLiteral,
+}
+
+def literal(token:Token):
+    return type_literal_map.get(token.type, UndefinedLiteral)(token)

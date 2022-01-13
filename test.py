@@ -1,11 +1,14 @@
+from interpreter import Interpreter
 from nodes import *
 
+interpreter = Interpreter()
+
 def test_literal(data, expected):
-    received = Literal(*data)
-    typ, string, value = expected
-    if typ != received.get_type():
-        assert False, f"name error: expected: {typ}, Received:{received.get_type()}" 
-    if value != received.eval():
-        assert False, f"value error: expected: {value}, Received:{received.eval()}" 
-    if string != received.__repr__():
-        assert False, f"value error: expected: {string}, Received:{received}"
+    token = interpreter.lex(data)[0]
+    res = literal(token)
+    print(f"{token}\n`{res}`")
+    assert res() == expected, f"Got `{res()}` but expected `{expected}`"
+
+test_literal('3', 3)
+test_literal('"Yeet"', 'Yeet')
+test_literal('3.3', 3.3)
