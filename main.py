@@ -2,7 +2,7 @@ from interpreter import Interpreter
 
 interpreter = Interpreter()
 
-input = "3 * 2 + 1.12;\n"
+input = "\"Test\"682"
 tokens = interpreter.lex(input)
 
-print(tokens)
+print(*tokens, sep='\n')

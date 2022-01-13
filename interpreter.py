@@ -49,6 +49,16 @@ class Interpreter:
                 else:
                     tokens += [Token(TokenType.Float, lexmeme, token_start_pos)]
 
+            elif lookahead == '"':
+                current_pos += 1
+                lexmeme = '"'
+                while current_pos < len(input) and input[current_pos] != '"':
+                    lexmeme += input[current_pos]
+                    current_pos += 1
+                lexmeme += '"'
+                current_pos += 1
+                tokens += [Token(TokenType.String, lexmeme, token_start_pos)]
+
             elif lookahead.isalpha():
                 while current_pos < len(input) and input[current_pos].isalnum():
                     lexmeme += input[current_pos]
@@ -67,4 +77,4 @@ class Interpreter:
         return tokens
 
     def parse(self, tokens:List[Token]):
-        pass
+        ast_tree = []

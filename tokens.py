@@ -22,5 +22,5 @@ class Token:
         self.start_pos = start_pos
 
     def __repr__(self):
-        return f"({self.type}:`{self.text}`)"
-        #return f"Token({self.type}, \'{self.text}\', {self.start_pos})"
+        #return f"({self.type}:`{self.text}`)"
+        return f"Token({self.type}, \'{self.text}\', {self.start_pos})"
