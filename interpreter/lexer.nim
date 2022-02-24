@@ -2,8 +2,6 @@ import std/[strutils]
 
 const operators = @["+", "-", "*", "/"]
 
-type UndefinedValueError* = object of Exception
-
 type TokenType* = enum
   Number, # TODO: When feelibg better, make sure to replace the generic number
     # with floats and integers
@@ -50,10 +48,14 @@ proc lex*(input: string): seq[Token] =
       tokens.add Token(tpe: TokenType.Integer, repr: lexmeme, startPos: startPos)
 
     elif $cc in operators:
+      var lexmeme = ""
+      while pos < maxLen and $input[pos] in operators:
+        lexmeme &= $input[pos]
+        pos += 1
       tokens.add Token(tpe: TokenType.Operator, repr: $cc, startPos: startPos)
       pos += 1
 
     else:
-      raise UndefinedValueError.newException("Can't lex this!")
+      raise ValueError.newException("Can't lex this!")
 
   return tokens
