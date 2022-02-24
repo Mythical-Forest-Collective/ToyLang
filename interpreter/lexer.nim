@@ -1,4 +1,4 @@
-import std/[strutils]
+import std/[strutils,strformat]
 
 const operators* = @["+", "-", "*", "/"]
 
@@ -27,7 +27,8 @@ type Token* = object
   startPos: int
 
 
-proc lex*(input: string): seq[Token] =
+proc lex*(sinput: string): seq[Token] =
+  let input = sinput.strip(chars={'\n'})
   var pos = 0
   var maxLen = input.len
   var tokens = newSeq[Token]()
@@ -35,8 +36,13 @@ proc lex*(input: string): seq[Token] =
   while pos < maxLen:
     let startPos = pos
     let cc = input[pos]
+    var tmp = cc
+    if cc == '\n':
+      echo "Character: `<Newline>`\nPosition: {pos}".fmt
+    else:
+      echo "Character: `{cc}`\nPosition: {pos}".fmt
 
-    if cc.isSpaceAscii or cc == '\n':
+    if cc.isSpaceAscii:
       pos += 1
 
     elif cc.isDigit:
@@ -67,7 +73,11 @@ proc lex*(input: string): seq[Token] =
       tokens.add Token(tpe: TokenType.String, repr: lexmeme, startPos: startPos)
       pos += 1
 
+    elif cc == ';':
+      pos += 1
+      tokens.add Token(tpe: TokenType.Semicolon, repr: ";", startPos: startPos)
+
     else:
-      raise ValueError.newException("Can't lex this!")
+      raise ValueError.newException(fmt"Can't lex character at position {startPos}! Character `{input[startPos]}`")
 
   return tokens
