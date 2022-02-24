@@ -1,6 +1,6 @@
 import std/[strutils]
 
-const operators = @["+", "-", "*", "/"]
+const operators* = @["+", "-", "*", "/"]
 
 type TokenType* = enum
   Number, # TODO: When feelibg better, make sure to replace the generic number
@@ -18,6 +18,7 @@ type TokenType* = enum
   RParen,
   LBracket,
   RBracket,
+  Semicolon,
   EOF
 
 type Token* = object
@@ -34,7 +35,8 @@ proc lex*(input: string): seq[Token] =
   while pos < maxLen:
     let startPos = pos
     let cc = input[pos]
-    if cc.isSpaceAscii:
+
+    if cc.isSpaceAscii or cc == '\n':
       pos += 1
 
     elif cc.isDigit:
@@ -52,7 +54,17 @@ proc lex*(input: string): seq[Token] =
       while pos < maxLen and $input[pos] in operators:
         lexmeme &= $input[pos]
         pos += 1
-      tokens.add Token(tpe: TokenType.Operator, repr: $cc, startPos: startPos)
+      tokens.add Token(tpe: TokenType.Operator, repr: lexmeme, startPos: startPos)
+      pos += 1
+
+    elif cc == '"':
+      var lexmeme = ""
+      while pos < maxLen:
+        lexmeme &= $input[pos]
+        pos += 1
+        if cc == '"' and startPos != pos-1:
+          break
+      tokens.add Token(tpe: TokenType.String, repr: lexmeme, startPos: startPos)
       pos += 1
 
     else:
